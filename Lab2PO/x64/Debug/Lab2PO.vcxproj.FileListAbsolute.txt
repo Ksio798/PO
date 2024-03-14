@@ -1,0 +1,2 @@
+A:\ProjectsC++\Lab2PO\x64\Debug\Lab2PO.exe
+A:\ProjectsC++\PO\Lab2PO\x64\Debug\Lab2PO.exe
