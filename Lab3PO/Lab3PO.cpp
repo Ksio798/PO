@@ -20,22 +20,26 @@ std::vector<Bullet> Bullets;
 std::vector<Enemy> Enemies;
 std::vector<Spawner> Spawners;
 
-class Enemy {
+class MovingObject {
 public:
-	std::pair<int, int> vector2 = std::make_pair(1, 0);
-	int x, y;
-	int HP = 1;
-	int speed = 1;
-	int prevtimeMove = 0;
-
+	float speed;
+	int x = 1, y = 1;
 	bool destroyed = true;
+	float prevtimeMove = 0;
+	std::pair<int, int> vector2;
+};
+
+class Enemy : public MovingObject {
+public:
+	int HP = 1;
+
 	std::pair<int, int> getWay() {
 		int a = (std::rand() % 3) - 1;
 		int b = (std::rand() % 3) - 1;
 		return std::make_pair(a, b);
 	}
 
-	void move(int t) {
+	void move(float t) {
 		if (destroyed)
 			return;
 		if (t - prevtimeMove >= speed) {
@@ -49,6 +53,7 @@ public:
 			}
 		}
 	}
+
 	void die() {
 		territory[x][y] = '-';
 		destroyed = true;
@@ -62,13 +67,10 @@ public:
 	}
 };
 
-class Bullet {
+class Bullet : public MovingObject{
 public:
-	int dmg, x, y;
-	float prevtime = 0;
-	std::pair<int, int> vector2;
-	float speed = 0.3f;
-	bool destroyed = true;
+	int dmg = 1;
+	
 	void destroy() {
 		territory[x][y] = '-';
 		destroyed = true;
@@ -77,13 +79,14 @@ public:
 	void move(float t) {
 		if (destroyed)
 			return;
-		if (t - prevtime >= speed) {
-			prevtime = t;
+		if (t - prevtimeMove >= speed) {
+			prevtimeMove = t;
 			if (territory[x + vector2.first][y + vector2.second] == '-') {
 				territory[x][y] = '-';
 				x += vector2.first;
 				y += vector2.second;
 				territory[x][y] = '*';
+				return;
 			}
 			else if (territory[x + vector2.first][y + vector2.second] == 'E') {
 				for (int i = 0; i < Enemies.size(); i++)
@@ -93,11 +96,9 @@ public:
 						break;
 					}
 				}
-				destroy();
+				
 			}
-			else {
-				destroy();
-			}
+			destroy();
 		}
 	}
 };
@@ -105,7 +106,7 @@ public:
 
 class Spawner {
 public:
-	int x, y;
+	int x = 1, y = 1;
 	int maxEnemy = 5;
 	int currentEnCount = 0;
 	int cd = 5;
@@ -144,7 +145,6 @@ public:
 class Timer {
 	std::chrono::system_clock::time_point tp1 = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point tp2 = std::chrono::system_clock::now();
-	bool action;
 public:
 	float time = 0;
 
@@ -153,7 +153,6 @@ public:
 		std::chrono::duration<float> duration = tp2 - tp1;
 		time = duration.count();
 	}
-
 };
 
 void addSpawner(int x, int y) {
@@ -231,6 +230,9 @@ void moving(int x, int y, float t) {
 }
 
 void attack() {
+	if (!(territory[PlayerX + PlayerRotation.first][PlayerY + PlayerRotation.second] == '-' 
+		|| territory[PlayerX + PlayerRotation.first][PlayerY + PlayerRotation.second] == 'E'))
+		return;
 	Bullets.at(bIndex).dmg = PlayerDmg;
 	Bullets.at(bIndex).vector2 = PlayerRotation;
 	Bullets.at(bIndex).x = PlayerX + PlayerRotation.first;
@@ -245,6 +247,7 @@ void SetBullets() {
 	for (int i = 0; i < 20; i++)
 	{
 		Bullet b;
+		b.speed = 0.1f;
 		b.destroyed = true;
 		Bullets.push_back(b);
 	}
@@ -254,6 +257,7 @@ void SetEnemies() {
 	for (int i = 0; i < 20; i++)
 	{
 		Enemy e;
+		e.speed = 1.1f;
 		e.destroyed = true;
 		Enemies.push_back(e);
 	}

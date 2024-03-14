@@ -36,10 +36,8 @@ namespace fefu_laboratory_two {
                 auto it = std::find(chunk.data.begin(), chunk.data.end(), value);
                 if (it != chunk.data.end()) {
                     chunk.data.erase(it);
-
-                    if (chunk.data.empty()) {
-                        chunks.erase(std::remove(chunks.begin(), chunks.end(), chunk), chunks.end());
-                    }
+                    if (chunk.data.empty()) 
+                        chunks.erase(std::remove(chunks.begin(), chunks.end(), chunk), chunks.end());                   
                     return;
                 }
             }
