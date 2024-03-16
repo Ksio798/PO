@@ -22,7 +22,7 @@ std::vector<Spawner> Spawners;
 
 class MovingObject {
 public:
-	float speed;
+	float speed = 1.0f;
 	int x = 1, y = 1;
 	bool destroyed = true;
 	float prevtimeMove = 0;
@@ -30,14 +30,21 @@ public:
 };
 
 class Enemy : public MovingObject {
-public:
-	int HP = 1;
-
 	std::pair<int, int> getWay() {
 		int a = (std::rand() % 3) - 1;
 		int b = (std::rand() % 3) - 1;
 		return std::make_pair(a, b);
 	}
+
+	void die() {
+		territory[x][y] = '-';
+		destroyed = true;
+		kills++;
+	}
+
+public:
+	int HP = 1;
+
 
 	void move(float t) {
 		if (destroyed)
@@ -54,12 +61,6 @@ public:
 		}
 	}
 
-	void die() {
-		territory[x][y] = '-';
-		destroyed = true;
-		kills++;
-	}
-
 	void takeDmg(int dmg) {
 		HP -= dmg;
 		if (HP <= 0)
@@ -68,13 +69,14 @@ public:
 };
 
 class Bullet : public MovingObject{
-public:
-	int dmg = 1;
-	
 	void destroy() {
 		territory[x][y] = '-';
 		destroyed = true;
 	}
+
+public:
+	int dmg = 1;
+	
 
 	void move(float t) {
 		if (destroyed)
@@ -96,7 +98,6 @@ public:
 						break;
 					}
 				}
-				
 			}
 			destroy();
 		}

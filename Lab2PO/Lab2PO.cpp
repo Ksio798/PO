@@ -3,34 +3,40 @@
 
 int main()
 {
-    fefu_laboratory_two::ChunkList<int, 5> chunkList;
+	fefu_laboratory_two::ChunkList<int, 2> chunkList;
 
-    // Вставка элементов
-    for (int i = 1; i <= 10; ++i)
-        chunkList.insert(i);
+	// Вставка элементов
+	for (int i = 1; i <= 10; ++i)
+		chunkList.insert(i);
 
+	//Вывод элементов
+	auto chunk = chunkList.chbegin();
+	for (int i = 0; i < chunkList.count(); i++)
+	{
+		for (int j = 0; j < (*chunk)->count; j++)
+			std::cout << (*chunk)->data[j] << '\n';
 
-    // Вывод содержимого после вставки
-    for (const auto& chunk : chunkList)
-    {
-        for (const auto& value : chunk.data)
-            std::cout << value << " ";
+		chunk = &(*chunk)->Next;
+		std::cout << '\n';
+	}
 
-        std::cout << '\n';
-    }
+	//удаление элементов
+	chunkList.erase(1);
+	chunkList.erase(4);
+	chunkList.erase(9);
 
-    // Удаление элементов
-    chunkList.erase(2);
-    chunkList.erase(5);
-    chunkList.erase(8);
+	//Вывод после удаления
+	chunk = chunkList.chbegin();
+	for (int i = 0; i < chunkList.count(); i++)
+	{
+		for (int j = 0; j < (*chunk)->count; j++)
+			std::cout << (*chunk)->data[j] << '\n';
+		
+		chunk = &(*chunk)->Next;
+		std::cout << '\n';
+	}
 
-    // Вывод содержимого после удалений
-    std::cout<< '\n';
-    for (const auto& chunk : chunkList)
-    {
-        for (const auto& value : chunk.data)
-            std::cout << value << " ";
-
-        std::cout << '\n';
-    }
+	//удаление всех элементов
+	chunkList.clear();
+	std::cout << chunkList.count();
 }

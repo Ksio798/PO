@@ -1,5 +1,5 @@
 ﻿  Lab3PO.cpp
-A:\ProjectsC++\PO\Lab3PO\Lab3PO.cpp(274,17): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
-A:\ProjectsC++\PO\Lab3PO\Lab3PO.cpp(283,27): warning C4244: аргумент: преобразование "float" в "int", возможна потеря данных
-A:\ProjectsC++\PO\Lab3PO\Lab3PO.cpp(293,18): warning C4244: аргумент: преобразование "float" в "int", возможна потеря данных
+A:\ProjectsC++\PO\Lab3PO\Lab3PO.cpp(275,17): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+A:\ProjectsC++\PO\Lab3PO\Lab3PO.cpp(284,27): warning C4244: аргумент: преобразование "float" в "int", возможна потеря данных
+A:\ProjectsC++\PO\Lab3PO\Lab3PO.cpp(294,18): warning C4244: аргумент: преобразование "float" в "int", возможна потеря данных
   Lab3PO.vcxproj -> A:\ProjectsC++\PO\Lab3PO\x64\Debug\Lab3PO.exe

@@ -46,7 +46,7 @@ public:
 		return temp;
 	}
 
-	Complex operator / (Complex& c)
+	Complex operator / (const Complex& c) const
 	{
 		Complex temp;
 
@@ -59,7 +59,7 @@ public:
 	bool operator == (const Complex& c) const { return real == c.real && im == c.im; }
 
 	bool operator!=(const Complex& c) const { return !(*this == c); }
-	
+
 	bool operator==(int num) const { return (real == static_cast<double>(num) && im == 0); }
 
 	bool operator!=(int num) const { return !(*this == num); }

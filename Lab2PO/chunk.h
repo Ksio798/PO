@@ -1,52 +1,113 @@
 ﻿#pragma once
-#include <vector>
 #include <algorithm>
+#include <cstring>
 
 namespace fefu_laboratory_two {
 
-    template <typename T, std::size_t N>
-    class ChunkList {
-    private:
-        struct Chunk {
-            std::vector<T> data;
+	template <typename T, std::size_t N>
+	class ChunkList {
+	private:
+		struct Chunk {
+			T* data{ new T[N] };
+			int count = 0;
+			Chunk* Next = nullptr;
+			Chunk* Previous = nullptr;
+		};
 
-            bool operator==(const Chunk& other) const {
-                return data == other.data;
-            }
-        };
+		Chunk* CurrentChunk = nullptr;
+		Chunk* FirstChunk = nullptr;
+		Chunk* LastChunk = nullptr;
+		int chunksCount = 0;
 
-        std::vector<Chunk> chunks;
+	public:
+		ChunkList() = default;
+		
+		void insert(const T& value) {
+			if (chunksCount == 0) {
+				FirstChunk = new Chunk;
+				chunksCount = 1;
+				FirstChunk->data[0] = value;
+				FirstChunk->count++;
+				LastChunk = FirstChunk;
+				return;
+			}
 
-    public:
-        ChunkList() = default;
+			CurrentChunk = FirstChunk;
+			for (int i = 0; i < chunksCount; i++)
+			{
+				if (CurrentChunk->count < N) {
+					CurrentChunk->data[CurrentChunk->count] = value;
+					CurrentChunk->count++;
+					return;
+				}
+				else if (CurrentChunk->Next != nullptr) {
+					CurrentChunk = CurrentChunk->Next;
+				}
+			}
 
-        void insert(const T& value) {
-            for (auto& chunk : chunks) {
-                if (chunk.data.size() < N) {
-                    chunk.data.push_back(value);
-                    return;
-                }
-            }
-            chunks.emplace_back(Chunk{});
-            chunks.back().data.push_back(value);
-        }
+			CurrentChunk->Next = new Chunk;
+			CurrentChunk->Next->Previous = CurrentChunk;
+			chunksCount++;
+			CurrentChunk = CurrentChunk->Next;
+			CurrentChunk->data[0] = value;
+			CurrentChunk->count++;
+			LastChunk = CurrentChunk;
+		}
 
-        void erase(const T& value) {
-            for (auto& chunk : chunks) {
-                auto it = std::find(chunk.data.begin(), chunk.data.end(), value);
-                if (it != chunk.data.end()) {
-                    chunk.data.erase(it);
-                    if (chunk.data.empty()) 
-                        chunks.erase(std::remove(chunks.begin(), chunks.end(), chunk), chunks.end());                   
-                    return;
-                }
-            }
-        }
+		void erase(const T& value) {
+			CurrentChunk = FirstChunk;
+			for (int i = 0; i < chunksCount; i++) {
+				for (int j = 0; j < CurrentChunk->count; j++)
+				{
+					if (CurrentChunk->data[j] == value) {
+						CurrentChunk->count--;
+						if (CurrentChunk->count == 0) {
+							chunksCount--;
+							if (i == chunksCount - 1)
+								LastChunk = CurrentChunk->Previous;
+							if (i == 0)
+								FirstChunk = CurrentChunk->Next;
+							else if (chunksCount > 0)
+								CurrentChunk->Previous->Next = CurrentChunk->Next;
+							delete CurrentChunk;
+							return;
+						}
 
-        auto begin() { return chunks.begin(); }
-        auto end() { return chunks.end(); }
-        auto cbegin() const { return chunks.cbegin(); }
-        auto cend() const { return chunks.cend(); }
-    };
+						T* temp{ new T[N] };
+						memmove(temp, CurrentChunk->data, (j + 1) * sizeof(T));
+						memmove(temp + j, (CurrentChunk->data) + (j + 1), (N - j) * sizeof(T));
+						free(CurrentChunk->data);
+						CurrentChunk->data = temp;
+					}
+				}
+				CurrentChunk = CurrentChunk->Next;
+			}
+		}
 
-} 
+		void clear() {
+			auto temp = LastChunk->Previous;
+			delete LastChunk;
+			while (temp != FirstChunk)
+			{
+				LastChunk = temp;
+				temp = LastChunk->Previous;
+				delete LastChunk;
+				LastChunk = nullptr;
+			}
+			delete FirstChunk;
+			FirstChunk = nullptr;
+			chunksCount = 0;
+		}
+
+		auto front() { return FirstChunk->data[0]; }
+		auto back() { return LastChunk->data[LastChunk->count - 1]; }
+		auto begin() { return &FirstChunk->data[0]; }
+		auto end() { return &LastChunk->data[LastChunk->count - 1]; }
+
+		auto chbegin() { return &FirstChunk; }
+		auto chend() { return &LastChunk; }
+
+		int count() { return chunksCount; }
+	};
+
+}
